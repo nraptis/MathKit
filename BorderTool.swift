@@ -25,7 +25,7 @@ public class BorderTool {
     static let SAMPLES_PER_POINT_BIG_FI = 128
     private static let SAMPLES_PER_POINT_BIG_FI_1 = (SAMPLES_PER_POINT_BIG_FI - 1)
     
-    public func build(spline: MathKit.ManualSpline,
+    public func build(spline: ManualSpline,
                       preferredStepSize: Float,
                       skipInterpolationDistance: Float,
                       lowFiSampleDistance: Float,
@@ -72,7 +72,7 @@ public class BorderTool {
         }
     }
     
-    private func proceedBuildWithGoodSample(spline: MathKit.ManualSpline,
+    private func proceedBuildWithGoodSample(spline: ManualSpline,
                                             controlIndex: Int,
                                             lastControlIndex: Int,
                                             preferredStepSize: Float,
@@ -159,7 +159,7 @@ public class BorderTool {
         let diffX = lastX - previousX
         let diffY = lastY - previousY
         let distanceSquared = diffX * diffX + diffY * diffY
-        if distanceSquared < MathKit.Math.epsilon {
+        if distanceSquared < Math.epsilon {
             cleanX[cleanCount - 1] = lastX
             cleanY[cleanCount - 1] = lastX
         } else {
@@ -235,7 +235,7 @@ public class BorderTool {
                 let diffX = currentX - previousX
                 let diffY = currentY - previousY
                 let distanceSquared = diffX * diffX + diffY * diffY
-                if distanceSquared > MathKit.Math.epsilon {
+                if distanceSquared > Math.epsilon {
                     let distance = sqrtf(distanceSquared)
                     result += distance
                 }
@@ -249,7 +249,7 @@ public class BorderTool {
         }
     }
     
-    private func sampleLowFi(spline: MathKit.ManualSpline, index: Int) {
+    private func sampleLowFi(spline: ManualSpline, index: Int) {
         sampleCount = 0
         for percentIndex in 0..<BorderTool.SAMPLES_PER_POINT_LOW_FI {
             let percent = Float(percentIndex) / Float(BorderTool.SAMPLES_PER_POINT_LOW_FI_1)
@@ -259,7 +259,7 @@ public class BorderTool {
         }
     }
     
-    private func sampleMedFi(spline: MathKit.ManualSpline, index: Int) {
+    private func sampleMedFi(spline: ManualSpline, index: Int) {
         sampleCount = 0
         for percentIndex in 0..<BorderTool.SAMPLES_PER_POINT_MED_FI {
             let percent = Float(percentIndex) / Float(BorderTool.SAMPLES_PER_POINT_MED_FI_1)
@@ -269,7 +269,7 @@ public class BorderTool {
         }
     }
     
-    private func sampleBigFi(spline: MathKit.ManualSpline, index: Int) {
+    private func sampleBigFi(spline: ManualSpline, index: Int) {
         sampleCount = 0
         for percentIndex in 0..<BorderTool.SAMPLES_PER_POINT_BIG_FI {
             let percent = Float(percentIndex) / Float(BorderTool.SAMPLES_PER_POINT_BIG_FI_1)

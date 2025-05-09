@@ -1,5 +1,5 @@
 //
-//  MathKit.swift
+//  swift
 //  MathKit
 //
 //  Created by Nicholas Raptis on 5/7/25.
@@ -950,7 +950,7 @@ public struct Math {
         (point2.x - point1.x) * (point3.y - point2.y) - (point3.x - point2.x) * (point2.y - point1.y) > 0.0
     }
     
-    public enum RayRayIntersectionResult {
+    @frozen public enum RayRayIntersectionResult {
         case invalidCoplanar
         case valid(pointX: Float, pointY: Float, distance: Float)
     }

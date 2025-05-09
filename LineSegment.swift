@@ -9,8 +9,8 @@ import Foundation
 import MathKit
 
 public protocol LineSegment: AnyObject {
-    typealias Point = MathKit.Math.Point
-    typealias Vector = MathKit.Math.Vector
+    typealias Point = Math.Point
+    typealias Vector = Math.Vector
     var x1: Float { set get }
     var y1: Float { set get }
     var x2: Float { set get }
@@ -39,7 +39,7 @@ public extension LineSegment {
     }
     
     func intersects(lineSegment: LineSegment) -> Bool {
-        MathKit.Math.lineSegmentIntersectsLineSegment(line1Point1X: x1,
+        Math.lineSegmentIntersectsLineSegment(line1Point1X: x1,
                                               line1Point1Y: y1,
                                               line1Point2X: x2,
                                               line1Point2Y: y2,

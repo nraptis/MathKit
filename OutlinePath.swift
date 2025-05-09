@@ -123,7 +123,7 @@ public class OutlinePath {
         let diffX = lastX - previousX
         let diffY = lastY - previousY
         let distanceSquared = diffX * diffX + diffY * diffY
-        if distanceSquared < MathKit.Math.epsilon {
+        if distanceSquared < Math.epsilon {
             _safeX[safeCount - 1] = lastX
             _safeY[safeCount - 1] = lastX
             

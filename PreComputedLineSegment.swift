@@ -65,7 +65,7 @@ public extension PrecomputedLineSegment {
         var result = Point(x: x1, y: y1)
         let factor1X = point.x - x1
         let factor1Y = point.y - y1
-        if lengthSquared > MathKit.Math.epsilon {
+        if lengthSquared > Math.epsilon {
             let scalar = directionX * factor1X + directionY * factor1Y
             if scalar <= 0.0 {
                 // stay at p1
@@ -84,7 +84,7 @@ public extension PrecomputedLineSegment {
         var result = Point(x: x1, y: y1)
         let factor1X = x - x1
         let factor1Y = y - y1
-        if lengthSquared > MathKit.Math.epsilon {
+        if lengthSquared > Math.epsilon {
             let scalar = directionX * factor1X + directionY * factor1Y
             if scalar <= 0.0 {
                 // stay at p1
@@ -104,7 +104,7 @@ public extension PrecomputedLineSegment {
         targetY = y1
         let factor1X = point.x - x1
         let factor1Y = point.y - y1
-        if lengthSquared > MathKit.Math.epsilon {
+        if lengthSquared > Math.epsilon {
             let scalar = directionX * factor1X + directionY * factor1Y
             if scalar <= 0.0 {
                 // stay at p1
@@ -123,7 +123,7 @@ public extension PrecomputedLineSegment {
         targetY = y1
         let factor1X = x - x1
         let factor1Y = y - y1
-        if lengthSquared > MathKit.Math.epsilon {
+        if lengthSquared > Math.epsilon {
             let scalar = directionX * factor1X + directionY * factor1Y
             if scalar <= 0.0 {
                 // stay at p1
@@ -140,7 +140,7 @@ public extension PrecomputedLineSegment {
     func distanceSquaredToClosestPoint(_ x: Float, _ y: Float) -> Float {
         let factor1X = x - x1
         let factor1Y = y - y1
-        if lengthSquared > MathKit.Math.epsilon {
+        if lengthSquared > Math.epsilon {
             let scalar = directionX * factor1X + directionY * factor1Y
             if scalar <= 0.0 {
                 let diffX = x1 - x
@@ -172,7 +172,7 @@ public extension PrecomputedLineSegment {
     func closestPointIsOnSegment(_ point: Point) -> Bool {
         let factor1X = point.x - x1
         let factor1Y = point.y - y1
-        if lengthSquared > MathKit.Math.epsilon {
+        if lengthSquared > Math.epsilon {
             let scalar = directionX * factor1X + directionY * factor1Y
             if scalar < 0.0 || scalar > length {
                 return false
@@ -185,7 +185,7 @@ public extension PrecomputedLineSegment {
     
     func distanceSquaredToLineSegment(_ lineSegment: PrecomputedLineSegment) -> Float {
         
-        if MathKit.Math.lineSegmentIntersectsLineSegment(line1Point1X: x1, line1Point1Y: y1,
+        if Math.lineSegmentIntersectsLineSegment(line1Point1X: x1, line1Point1Y: y1,
                                                  line1Point2X: x2, line1Point2Y: y2,
                                                  line2Point1X: lineSegment.x1, line2Point1Y: lineSegment.y1,
                                                  line2Point2X: lineSegment.x2, line2Point2Y: lineSegment.y2) {
@@ -215,7 +215,7 @@ public extension PrecomputedLineSegment {
         directionX = x2 - x1
         directionY = y2 - y1
         lengthSquared = directionX * directionX + directionY * directionY
-        if lengthSquared > MathKit.Math.epsilon {
+        if lengthSquared > Math.epsilon {
             length = sqrtf(lengthSquared)
             directionX /= length
             directionY /= length
@@ -232,9 +232,9 @@ public extension PrecomputedLineSegment {
         
         directionAngle = -atan2f(-directionX, -directionY)
         
-        normalAngle = directionAngle + MathKit.Math.pi_2
-        if normalAngle >= MathKit.Math.pi2 { normalAngle -= MathKit.Math.pi2 }
-        if normalAngle < 0.0 { normalAngle += MathKit.Math.pi2 }
+        normalAngle = directionAngle + Math.pi_2
+        if normalAngle >= Math.pi2 { normalAngle -= Math.pi2 }
+        if normalAngle < 0.0 { normalAngle += Math.pi2 }
     }
     
     func writeTo(_ precomputedLineSegment: PrecomputedLineSegment) {
