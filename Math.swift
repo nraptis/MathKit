@@ -898,7 +898,7 @@ public struct Math {
         var dist = point.x * point.x + point.y * point.y
         if dist > epsilon {
             dist = sqrtf(dist)
-            let pivot = face(target: point)
+            let pivot = -atan2f(Float(-point.x), Float(-point.y))
             let newDir = angleToVector(radians: pivot + radians)
             return Point(x: newDir.x * dist, y: newDir.y * dist)
         }
@@ -945,6 +945,58 @@ public struct Math {
         result = untransformPoint(point: result, scale: scale, rotation: rotation)
         return result
     }
+    
+    public static func rotateVector(vector: Vector, radians: Float) -> Vector {
+            var dist = vector.x * vector.x + vector.y * vector.y
+            if dist > epsilon {
+                dist = sqrtf(dist)
+                let pivot = -atan2f(Float(-vector.x), Float(-vector.y))
+                let newDir = angleToVector(radians: pivot + radians)
+                return Vector(x: newDir.x * dist, y: newDir.y * dist)
+            }
+            return vector
+        }
+        
+        public static func transformVector(vector: Vector, scale: Float, rotation: Float) -> Vector {
+            var x = vector.x
+            var y = vector.y
+            if scale != 1.0 {
+                x *= scale
+                y *= scale
+            }
+            if rotation != 0 {
+                var dist = x * x + y * y
+                if dist > epsilon {
+                    dist = sqrtf(Float(dist))
+                    x /= dist
+                    y /= dist
+                }
+                let pivotRotation = rotation - atan2f(-x, -y)
+                x = sinf(Float(pivotRotation)) * dist
+                y = -cosf(Float(pivotRotation)) * dist
+            }
+            return Vector(x: x, y: y)
+        }
+        
+        public static func transformVector(vector: Vector, translation: Point, scale: Float, rotation: Float) -> Vector {
+            var result = transformVector(vector: vector, scale: scale, rotation: rotation)
+            result = Vector(x: result.x + translation.x, y: result.y + translation.y)
+            return result
+        }
+        
+        public static func untransformVector(vector: Vector, scale: Float, rotation: Float) -> Vector {
+            if fabsf(scale) > Self.epsilon {
+                return transformVector(vector: vector, scale: 1.0 / scale, rotation: -rotation)
+            } else {
+                return transformVector(vector: vector, scale: 1.0, rotation: -rotation)
+            }
+        }
+        
+        public static func untransformVector(vector: Vector, translation: Point, scale: Float, rotation: Float) -> Vector {
+            var result = Vector(x: vector.x - translation.x, y: vector.y - translation.y)
+            result = untransformVector(vector: result, scale: scale, rotation: rotation)
+            return result
+        }
     
     public static func clockwise(point1: Point, point2: Point, point3: Point) -> Bool {
         (point2.x - point1.x) * (point3.y - point2.y) - (point3.x - point2.x) * (point2.y - point1.y) > 0.0

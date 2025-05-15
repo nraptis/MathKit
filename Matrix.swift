@@ -7,7 +7,6 @@
 
 import Foundation
 import simd
-import SceneKit
 
 public extension matrix_float4x4 {
     
@@ -33,12 +32,14 @@ public extension matrix_float4x4 {
         columns.3.w = m33 // 15
     }
     
+    /*
     mutating func make(matrix4: SCNMatrix4) {
         make(m00: matrix4.m11, m01: matrix4.m12, m02: matrix4.m13, m03: matrix4.m14,
              m10: matrix4.m21, m11: matrix4.m22, m12: matrix4.m23, m13: matrix4.m24,
              m20: matrix4.m31, m21: matrix4.m32, m22: matrix4.m33, m23: matrix4.m34,
              m30: matrix4.m41, m31: matrix4.m42, m32: matrix4.m43, m33: matrix4.m44)
     }
+    */
     
     func array() -> [Float] {
         return [columns.0.x, columns.0.y, columns.0.z, columns.0.w,

@@ -1,14 +1,12 @@
 //
-//  ManualSpline.swift
+//  FancySpline.swift
 //
 
 import Foundation
 
-public class ManualSpline {
+public class FancySpline {
     
-    public init() {
-        
-    }
+    public init() { }
     
     public private(set) var capacity = 0
     public private(set) var count = 0
@@ -19,7 +17,8 @@ public class ManualSpline {
     public var _x = [Float]()
     public var _y = [Float]()
     
-    public var manualTan = [Bool]()
+    public var manualTanIn = [Bool]()
+    public var manualTanOut = [Bool]()
     
     private var coefXB = [Float]()
     private var coefXC = [Float]()
@@ -32,6 +31,9 @@ public class ManualSpline {
     public var inTanY = [Float]()
     public var outTanX = [Float]()
     public var outTanY = [Float]()
+    
+    public var inTanTemp = [Float]()
+    public var outTanTemp = [Float]()
     
     private var delta = [Float]()
     private var temp = [Float]()
@@ -55,7 +57,8 @@ public class ManualSpline {
             while loopIndex < ceiling {
                 _x[loopIndex] = _x[loopIndex + 1]
                 _y[loopIndex] = _y[loopIndex + 1]
-                manualTan[loopIndex] = manualTan[loopIndex + 1]
+                manualTanIn[loopIndex] = manualTanIn[loopIndex + 1]
+                manualTanOut[loopIndex] = manualTanOut[loopIndex + 1]
                 inTanX[loopIndex] = inTanX[loopIndex + 1]
                 inTanY[loopIndex] = inTanY[loopIndex + 1]
                 outTanX[loopIndex] = outTanX[loopIndex + 1]
@@ -73,11 +76,30 @@ public class ManualSpline {
         }
     }
     
-    public func enableManualControlTan(at index: Int,
-                                inTanX: Float, inTanY: Float,
-                                outTanX: Float, outTanY: Float) {
+    public func enableManualControlTanIn(at index: Int,
+                                         inTanX: Float, inTanY: Float) {
         if index >= 0 && index < capacity {
-            manualTan[index] = true
+            manualTanIn[index] = true
+            self.inTanX[index] = inTanX
+            self.inTanY[index] = inTanY
+        }
+    }
+    
+    public func enableManualControlTanOut(at index: Int,
+                                          outTanX: Float, outTanY: Float) {
+        if index >= 0 && index < capacity {
+            manualTanOut[index] = true
+            self.outTanX[index] = outTanX
+            self.outTanY[index] = outTanY
+        }
+    }
+    
+    public func enableManualControlTanInOut(at index: Int,
+                                            inTanX: Float, inTanY: Float,
+                                            outTanX: Float, outTanY: Float) {
+        if index >= 0 && index < capacity {
+            manualTanIn[index] = true
+            manualTanOut[index] = true
             self.inTanX[index] = inTanX
             self.inTanY[index] = inTanY
             self.outTanX[index] = outTanX
@@ -85,18 +107,25 @@ public class ManualSpline {
         }
     }
     
-    public func disableManualControlTan(at index: Int) {
+    public func disableManualControlTanIn(at index: Int) {
         if index >= 0 && index < capacity {
-            manualTan[index] = false
+            manualTanIn[index] = false
         }
     }
     
+    public func disableManualControlTanOut(at index: Int) {
+        if index >= 0 && index < capacity {
+            manualTanOut[index] = false
+        }
+    }
+    
+    
     public func reserveCapacity(minimumCapacity: Int) {
         if minimumCapacity > capacity {
-            
             _x.reserveCapacity(minimumCapacity)
             _y.reserveCapacity(minimumCapacity)
-            manualTan.reserveCapacity(minimumCapacity)
+            manualTanIn.reserveCapacity(minimumCapacity)
+            manualTanOut.reserveCapacity(minimumCapacity)
             coefXB.reserveCapacity(minimumCapacity)
             coefXC.reserveCapacity(minimumCapacity)
             coefXD.reserveCapacity(minimumCapacity)
@@ -109,10 +138,15 @@ public class ManualSpline {
             outTanY.reserveCapacity(minimumCapacity)
             delta.reserveCapacity(minimumCapacity)
             temp.reserveCapacity(minimumCapacity)
+            inTanTemp.reserveCapacity(minimumCapacity)
+            outTanTemp.reserveCapacity(minimumCapacity)
+            
+            
             
             while _x.count < minimumCapacity { _x.append(0.0) }
             while _y.count < minimumCapacity { _y.append(0.0) }
-            while manualTan.count < minimumCapacity { manualTan.append(false) }
+            while manualTanIn.count < minimumCapacity { manualTanIn.append(false) }
+            while manualTanOut.count < minimumCapacity { manualTanOut.append(false) }
             while coefXB.count < minimumCapacity { coefXB.append(0.0) }
             while coefXC.count < minimumCapacity { coefXC.append(0.0) }
             while coefXD.count < minimumCapacity { coefXD.append(0.0) }
@@ -125,6 +159,9 @@ public class ManualSpline {
             while outTanY.count < minimumCapacity { outTanY.append(0.0) }
             while delta.count < minimumCapacity { delta.append(0.0) }
             while temp.count < minimumCapacity { temp.append(0.0) }
+            while inTanTemp.count < minimumCapacity { inTanTemp.append(0.0) }
+            while outTanTemp.count < minimumCapacity { outTanTemp.append(0.0) }
+            
             capacity = minimumCapacity
         }
     }
@@ -133,7 +170,8 @@ public class ManualSpline {
         if keepingCapacity == false {
             _x.removeAll(keepingCapacity: false)
             _y.removeAll(keepingCapacity: false)
-            manualTan.removeAll(keepingCapacity: false)
+            manualTanIn.removeAll(keepingCapacity: false)
+            manualTanOut.removeAll(keepingCapacity: false)
             coefXB.removeAll(keepingCapacity: false)
             coefXC.removeAll(keepingCapacity: false)
             coefXD.removeAll(keepingCapacity: false)
@@ -146,6 +184,9 @@ public class ManualSpline {
             outTanY.removeAll(keepingCapacity: false)
             delta.removeAll(keepingCapacity: false)
             temp.removeAll(keepingCapacity: false)
+            inTanTemp.removeAll(keepingCapacity: false)
+            outTanTemp.removeAll(keepingCapacity: false)
+            
             capacity = 0
         }
         count = 0
@@ -356,23 +397,6 @@ public class ManualSpline {
         return ClosestControlPointResult(index: bestIndex, distance: bestDistance)
     }
     
-    public func readFromSpline(spline: ManualSpline) {
-        removeAll(keepingCapacity: true)
-        for index in 0..<spline.count {
-            let x = spline._x[index]
-            let y = spline._y[index]
-            addControlPoint(x, y)
-            
-            if spline.manualTan[index] {
-                manualTan[index] = true
-                inTanX[index] = spline.inTanX[index]
-                inTanY[index] = spline.inTanY[index]
-                outTanX[index] = spline.outTanX[index]
-                outTanY[index] = spline.outTanY[index]
-            }
-        }
-    }
-    
     public func solve(closed: Bool) {
         self.closed = closed
         if count <= 0 {
@@ -394,10 +418,11 @@ public class ManualSpline {
         }
     }
     
+    
     private func solveX() {
         if count == 1 {
-            inTanX[0] = 0.0
-            outTanX[0] = 0.0
+            inTanTemp[0] = 0.0
+            outTanTemp[0] = 0.0
             return
         }
         var _max = 0
@@ -422,23 +447,27 @@ public class ManualSpline {
             }
             H = H - (G + 1.0) * (0.25 + delta[_max])
             temp[_max] = F - (G + 1.0) * temp[_max1]
-            if manualTan[_max] == false {
-                outTanX[_max] = temp[_max] / H
-                inTanX[_max] = -outTanX[_max]
-            }
-            if manualTan[_max1] == false {
-                outTanX[_max1] = temp[_max1] - (0.25 + delta[_max]) * -inTanX[_max]
-                inTanX[_max1] = -outTanX[_max1]
-            }
+            
+            outTanTemp[_max] = temp[_max] / H
+            inTanTemp[_max] = -outTanTemp[_max]
+            
+            outTanTemp[_max1] = temp[_max1] - (0.25 + delta[_max]) * -inTanTemp[_max]
+            inTanTemp[_max1] = -outTanTemp[_max1]
             
             i = _max - 2
             while i >= 0 {
-                if manualTan[i] == false {
-                    outTanX[i] = temp[i] - 0.25 * -inTanX[i + 1] - delta[i + 1] * -inTanX[_max]
-                    inTanX[i] = -outTanX[i]
-                }
+                outTanTemp[i] = temp[i] - 0.25 * -inTanTemp[i + 1] - delta[i + 1] * -inTanTemp[_max]
+                inTanTemp[i] = -outTanTemp[i]
                 i -= 1
             }
+
+            i = 0
+            while i <= _max {
+                if manualTanIn[i] == false { inTanX[i] = inTanTemp[i] }
+                if manualTanOut[i] == false { outTanX[i] = outTanTemp[i] }
+                i += 1
+            }
+            
             coefXB[_max] = outTanX[_max]
             coefXC[_max] = 3.0 * (_x[0] - _x[_max]) - 2.0 * outTanX[_max] + inTanX[0]
             coefXD[_max] = 2.0 * (_x[_max] - _x[0]) + outTanX[_max] - inTanX[0]
@@ -452,17 +481,22 @@ public class ManualSpline {
                 i += 1
             }
             delta[_max] = (3.0 * (_x[_max] - _x[_max1]) - delta[_max1]) * 0.25
-            if manualTan[_max] == false {
-                outTanX[_max] = delta[_max]
-                inTanX[_max] = -outTanX[_max]
-            }
+            
+            outTanTemp[_max] = delta[_max]
+            inTanTemp[_max] = -outTanTemp[_max]
+            
             i = _max1
             while i >= 0 {
-                if manualTan[i] == false {
-                    outTanX[i] = delta[i] - 0.25 * -inTanX[i + 1]
-                    inTanX[i] = -outTanX[i]
-                }
+                outTanTemp[i] = delta[i] - 0.25 * -inTanTemp[i + 1]
+                inTanTemp[i] = -outTanTemp[i]
                 i -= 1
+            }
+            
+            i = 0
+            while i <= _max {
+                if manualTanIn[i] == false { inTanX[i] = inTanTemp[i] }
+                if manualTanOut[i] == false { outTanX[i] = outTanTemp[i] }
+                i += 1
             }
         }
         
@@ -473,12 +507,12 @@ public class ManualSpline {
             coefXD[i] = 2.0 * (_x[i] - _x[i + 1]) + outTanX[i] - inTanX[i + 1]
             i += 1
         }
-     }
+    }
     
     private func solveY() {
         if count == 1 {
-            inTanY[0] = 0.0
-            outTanY[0] = 0.0
+            inTanTemp[0] = 0.0
+            outTanTemp[0] = 0.0
             return
         }
         var _max = 0
@@ -503,23 +537,27 @@ public class ManualSpline {
             }
             H = H - (G + 1.0) * (0.25 + delta[_max])
             temp[_max] = F - (G + 1.0) * temp[_max1]
-            if manualTan[_max] == false {
-                outTanY[_max] = temp[_max] / H
-                inTanY[_max] = -outTanY[_max]
-            }
-            if manualTan[_max1] == false {
-                outTanY[_max1] = temp[_max1] - (0.25 + delta[_max]) * -inTanY[_max]
-                inTanY[_max1] = -outTanY[_max1]
-            }
+            
+            outTanTemp[_max] = temp[_max] / H
+            inTanTemp[_max] = -outTanTemp[_max]
+            
+            outTanTemp[_max1] = temp[_max1] - (0.25 + delta[_max]) * -inTanTemp[_max]
+            inTanTemp[_max1] = -outTanTemp[_max1]
             
             i = _max - 2
             while i >= 0 {
-                if manualTan[i] == false {
-                    outTanY[i] = temp[i] - 0.25 * -inTanY[i + 1] - delta[i + 1] * -inTanY[_max]
-                    inTanY[i] = -outTanY[i]
-                }
+                outTanTemp[i] = temp[i] - 0.25 * -inTanTemp[i + 1] - delta[i + 1] * -inTanTemp[_max]
+                inTanTemp[i] = -outTanTemp[i]
                 i -= 1
             }
+
+            i = 0
+            while i <= _max {
+                if manualTanIn[i] == false { inTanY[i] = inTanTemp[i] }
+                if manualTanOut[i] == false { outTanY[i] = outTanTemp[i] }
+                i += 1
+            }
+            
             coefYB[_max] = outTanY[_max]
             coefYC[_max] = 3.0 * (_y[0] - _y[_max]) - 2.0 * outTanY[_max] + inTanY[0]
             coefYD[_max] = 2.0 * (_y[_max] - _y[0]) + outTanY[_max] - inTanY[0]
@@ -533,17 +571,22 @@ public class ManualSpline {
                 i += 1
             }
             delta[_max] = (3.0 * (_y[_max] - _y[_max1]) - delta[_max1]) * 0.25
-            if manualTan[_max] == false {
-                outTanY[_max] = delta[_max]
-                inTanY[_max] = -outTanY[_max]
-            }
+            
+            outTanTemp[_max] = delta[_max]
+            inTanTemp[_max] = -outTanTemp[_max]
+            
             i = _max1
             while i >= 0 {
-                if manualTan[i] == false {
-                    outTanY[i] = delta[i] - 0.25 * -inTanY[i + 1]
-                    inTanY[i] = -outTanY[i]
-                }
+                outTanTemp[i] = delta[i] - 0.25 * -inTanTemp[i + 1]
+                inTanTemp[i] = -outTanTemp[i]
                 i -= 1
+            }
+            
+            i = 0
+            while i <= _max {
+                if manualTanIn[i] == false { inTanY[i] = inTanTemp[i] }
+                if manualTanOut[i] == false { outTanY[i] = outTanTemp[i] }
+                i += 1
             }
         }
         
@@ -554,5 +597,114 @@ public class ManualSpline {
             coefYD[i] = 2.0 * (_y[i] - _y[i + 1]) + outTanY[i] - inTanY[i + 1]
             i += 1
         }
-     }
+    }
+    
+    
+    /*
+    private func solveX() {
+        solveAxis(&_x, &inTanX, &outTanX, &coefXB, &coefXC, &coefXD)
+    }
+    
+    private func solveY() {
+        solveAxis(&_y, &inTanY, &outTanY, &coefYB, &coefYC, &coefYD)
+    }
+    
+    private func solveAxis(_ coord: inout [Float],
+                           _ inTan: inout [Float],
+                           _ outTan: inout [Float],
+                           _ coefB: inout [Float],
+                           _ coefC: inout [Float],
+                           _ coefD: inout [Float]) {
+        
+        if count == 1 {
+            inTanTemp[0] = 0.0
+            outTanTemp[0] = 0.0
+            return
+        }
+        var _max = 0
+        var _max1 = 0
+        var i = 0
+        if closed {
+            _max = count - 1
+            _max1 = _max - 1
+            delta[1] = 0.25
+            temp[0] = 0.25 * 3.0 * (coord[1] - coord[_max])
+            var G = Float(1.0)
+            var H = Float(4.0)
+            var F = 3.0 * (coord[0] - coord[_max1])
+            i = 1
+            while i < _max {
+                delta[i + 1] = -0.25 * delta[i]
+                temp[i] = 0.25 * (3.0 * (coord[i + 1] - coord[i - 1]) - temp[i - 1])
+                H = H - G * delta[i]
+                F = F - G * temp[i - 1]
+                G = -0.25 * G
+                i += 1
+            }
+            H = H - (G + 1.0) * (0.25 + delta[_max])
+            temp[_max] = F - (G + 1.0) * temp[_max1]
+            
+            outTanTemp[_max] = temp[_max] / H
+            inTanTemp[_max] = -outTanTemp[_max]
+            
+            outTanTemp[_max1] = temp[_max1] - (0.25 + delta[_max]) * -inTanTemp[_max]
+            inTanTemp[_max1] = -outTanTemp[_max1]
+            
+            i = _max - 2
+            while i >= 0 {
+                outTanTemp[i] = temp[i] - 0.25 * -inTanTemp[i + 1] - delta[i + 1] * -inTanTemp[_max]
+                inTanTemp[i] = -outTanTemp[i]
+                i -= 1
+            }
+
+            i = 0
+            while i <= _max {
+                if manualTanIn[i] == false { inTan[i] = inTanTemp[i] }
+                if manualTanOut[i] == false { outTan[i] = outTanTemp[i] }
+                i += 1
+            }
+            
+            coefB[_max] = outTan[_max]
+            coefC[_max] = 3.0 * (coord[0] - coord[_max]) - 2.0 * outTan[_max] + inTan[0]
+            coefD[_max] = 2.0 * (coord[_max] - coord[0]) + outTan[_max] - inTan[0]
+        } else {
+            _max = count - 1
+            _max1 = _max - 1
+            delta[0] = 3.0 * (coord[1] - coord[0]) * 0.25
+            i = 1
+            while i < _max {
+                delta[i] = (3.0 * (coord[i + 1] - coord[i - 1]) - delta[i - 1]) * 0.25
+                i += 1
+            }
+            delta[_max] = (3.0 * (coord[_max] - coord[_max1]) - delta[_max1]) * 0.25
+            
+            outTanTemp[_max] = delta[_max]
+            inTanTemp[_max] = -outTanTemp[_max]
+            
+            i = _max1
+            while i >= 0 {
+                outTanTemp[i] = delta[i] - 0.25 * -inTanTemp[i + 1]
+                inTanTemp[i] = -outTanTemp[i]
+                i -= 1
+            }
+            
+            i = 0
+            while i <= _max {
+                if manualTanIn[i] == false { inTan[i] = inTanTemp[i] }
+                if manualTanOut[i] == false { outTan[i] = outTanTemp[i] }
+                i += 1
+            }
+        }
+        
+        i = 0
+        while i < _max {
+            coefB[i] = outTan[i]
+            coefC[i] = 3.0 * (coord[i + 1] - coord[i]) - 2.0 * outTan[i] + inTan[i + 1]
+            coefD[i] = 2.0 * (coord[i] - coord[i + 1]) + outTan[i] - inTan[i + 1]
+            i += 1
+        }
+        
+    }
+    */
+    
 }

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import MathKit
 
 public protocol PrecomputedLineSegment: LineSegment {
     

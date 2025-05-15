@@ -308,22 +308,6 @@ public class AutomaticSpline {
         }
     }
     
-    public func readFromSpline(spline: ManualSpline) {
-        removeAll(keepingCapacity: true)
-        for index in 0..<spline.count {
-            let x = spline._x[index]
-            let y = spline._y[index]
-            addControlPoint(x, y)
-            
-            if spline.manualTan[index] {
-                inTanX[index] = spline.inTanX[index]
-                inTanY[index] = spline.inTanY[index]
-                outTanX[index] = spline.outTanX[index]
-                outTanY[index] = spline.outTanY[index]
-            }
-        }
-    }
-    
     public func solve(closed: Bool) {
         self.closed = closed
         if count <= 0 {
@@ -373,21 +357,21 @@ public class AutomaticSpline {
             }
             H = H - (G + 1.0) * (0.25 + delta[_max])
             temp[_max] = F - (G + 1.0) * temp[_max1]
-            //if manualTan[_max] == false {
+            
                 outTanX[_max] = temp[_max] / H
                 inTanX[_max] = -outTanX[_max]
-            //}
-            //if manualTan[_max1] == false {
-                outTanX[_max1] = temp[_max1] - (0.25 + delta[_max]) * -inTanX[_max]
+            
+            
+            outTanX[_max1] = temp[_max1] - (0.25 + delta[_max]) * -inTanX[_max]
                 inTanX[_max1] = -outTanX[_max1]
-            //}
+            
             
             i = _max - 2
             while i >= 0 {
-                //if manualTan[i] == false {
+                
                     outTanX[i] = temp[i] - 0.25 * -inTanX[i + 1] - delta[i + 1] * -inTanX[_max]
                     inTanX[i] = -outTanX[i]
-                //}
+                
                 i -= 1
             }
             coefXB[_max] = outTanX[_max]
